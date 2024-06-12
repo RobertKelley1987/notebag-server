@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createUser = void 0;
+exports.getUserByEmail = exports.createUser = void 0;
 const config_1 = __importDefault(require("./config"));
 const uuid_1 = require("uuid");
 const express_error_1 = require("../util/express-error");
@@ -26,8 +26,27 @@ function createUser(email, password) {
             return { id, email, password };
         }
         catch (error) {
+            const dbError = error;
+            if (dbError.code === "ER_DUP_ENTRY") {
+                throw new express_error_1.ExpressError(400, "User already exists.");
+            }
             throw new express_error_1.ExpressError(500, "Failed to register new user.");
         }
     });
 }
 exports.createUser = createUser;
+function getUserByEmail(email) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const sql = "SELECT * FROM users WHERE email = ?";
+            const values = [email];
+            const [res] = yield config_1.default.query(sql, values);
+            const user = res[0];
+            return { id: user.user_id, email: user.email, password: user.password };
+        }
+        catch (error) {
+            throw new express_error_1.ExpressError(500, "Failed to register new user.");
+        }
+    });
+}
+exports.getUserByEmail = getUserByEmail;

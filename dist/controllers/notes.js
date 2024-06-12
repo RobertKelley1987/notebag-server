@@ -38,5 +38,10 @@ const notes = {
         const notes = yield (0, notes_1.getUserNotes)(userId);
         res.status(200).send({ notes });
     }),
+    findOne: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { noteId } = req.params;
+        const note = yield (0, notes_1.getNoteById)(noteId);
+        res.status(200).send({ note });
+    }),
 };
 exports.default = notes;

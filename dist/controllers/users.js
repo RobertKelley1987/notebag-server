@@ -17,7 +17,6 @@ const express_error_1 = require("../util/express-error");
 const users_1 = require("../db/users");
 const users = {
     register: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log("register");
         const { email, password } = req.body;
         if (!email || !password) {
             throw new express_error_1.ExpressError(400, "Email and password are both required.");
@@ -26,6 +25,25 @@ const users = {
         const newUser = yield (0, users_1.createUser)(email, hashedPassword);
         req.session.userId = newUser.id;
         res.status(200).send({ user: newUser });
+    }),
+    login: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            throw new express_error_1.ExpressError(400, "Email and password are both required.");
+        }
+        const foundUser = yield (0, users_1.getUserByEmail)(email);
+        const passwordValidated = yield bcryptjs_1.default.compare(password, foundUser.password);
+        if (passwordValidated) {
+            req.session.userId = foundUser.id;
+            res.status(200).send({ user: foundUser });
+        }
+        else {
+            throw new express_error_1.ExpressError(400, "Invalid credentials.");
+        }
+    }),
+    logout: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        req.session.userId = null;
+        res.status(200).send({ success: "User successfully logged out " });
     }),
     getSession: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         console.log("session");

@@ -1,4 +1,4 @@
-import { createNote, getUserNotes, updateNote } from "../db/notes";
+import { createNote, getNoteById, getUserNotes, updateNote } from "../db/notes";
 import { ExpressError } from "../util/express-error";
 import type { Request, Response } from "express";
 
@@ -35,6 +35,11 @@ const notes = {
     const userId = req.session.userId as string;
     const notes = await getUserNotes(userId);
     res.status(200).send({ notes });
+  },
+  findOne: async (req: Request, res: Response) => {
+    const { noteId } = req.params;
+    const note = await getNoteById(noteId);
+    res.status(200).send({ note });
   },
 };
 

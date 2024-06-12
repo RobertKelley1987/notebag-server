@@ -10,5 +10,6 @@ const router = express_1.default.Router({ mergeParams: true });
 router.use(middleware_1.auth);
 router.get("/", notes_1.default.findAll);
 router.post("/", notes_1.default.create);
+router.get("/:noteId", notes_1.default.findOne);
 router.put("/:noteId", notes_1.default.update);
 exports.default = router;

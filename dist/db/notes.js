@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserNotes = exports.updateNote = exports.createNote = void 0;
+exports.getNoteById = exports.getUserNotes = exports.updateNote = exports.createNote = void 0;
 const config_1 = __importDefault(require("./config"));
 const express_error_1 = require("../util/express-error");
 const formatNote = (note) => {
@@ -23,13 +23,17 @@ const formatNote = (note) => {
 function createNote(noteId, userId, title, content) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            // Shift position of all user notes.
+            const posSql = "UPDATE notes SET position = position + 1 WHERE user_id = ?";
+            const posValues = [userId];
+            yield config_1.default.query(posSql, posValues);
+            // Insert new note at position zero.
             const sql = "INSERT INTO notes(note_id, title, content, user_id) VALUES(?, ?, ?, ?)";
             const values = [noteId, title, content, userId];
             yield config_1.default.query(sql, values);
             return { id: noteId, title, content };
         }
         catch (error) {
-            console.log(error);
             throw new express_error_1.ExpressError(500, "Failed to create new note in db.");
         }
     });
@@ -44,6 +48,7 @@ function updateNote(noteId, title, content) {
             return { id: noteId, title, content };
         }
         catch (error) {
+            console.log(error);
             throw new express_error_1.ExpressError(500, "Failed to update note in db.");
         }
     });
@@ -52,7 +57,7 @@ exports.updateNote = updateNote;
 function getUserNotes(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const sql = "SELECT * FROM notes WHERE user_id = ?";
+            const sql = "SELECT * FROM notes WHERE user_id = ? ORDER BY position DESC";
             const values = [userId];
             const [notes] = yield config_1.default.query(sql, values);
             return notes.map((note) => formatNote(note));
@@ -63,3 +68,18 @@ function getUserNotes(userId) {
     });
 }
 exports.getUserNotes = getUserNotes;
+function getNoteById(noteId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const sql = "SELECT * FROM notes WHERE note_id = ?";
+            const values = [noteId];
+            const [notes] = yield config_1.default.query(sql, values);
+            const note = notes[0];
+            return formatNote(note);
+        }
+        catch (error) {
+            throw new express_error_1.ExpressError(500, "Failed to find note in db.");
+        }
+    });
+}
+exports.getNoteById = getNoteById;

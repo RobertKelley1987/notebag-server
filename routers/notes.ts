@@ -6,6 +6,7 @@ const router = express.Router({ mergeParams: true });
 router.use(auth);
 router.get("/", notes.findAll);
 router.post("/", notes.create);
+router.get("/:noteId", notes.findOne);
 router.put("/:noteId", notes.update);
 
 export default router;
