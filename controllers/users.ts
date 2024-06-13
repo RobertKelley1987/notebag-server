@@ -22,7 +22,10 @@ const users = {
       throw new ExpressError(400, "Email and password are both required.");
     }
 
-    const foundUser = await getUserByEmail(email);
+    const foundUser = await getUserByEmail(email).catch((error) => {
+      throw new ExpressError(400, "Invalid credentials.");
+    });
+
     const passwordValidated = await bcrypt.compare(
       password,
       foundUser.password
@@ -31,9 +34,9 @@ const users = {
     if (passwordValidated) {
       req.session.userId = foundUser.id;
       res.status(200).send({ user: foundUser });
-    } else {
-      throw new ExpressError(400, "Invalid credentials.");
     }
+
+    throw new ExpressError(400, "Invalid credentials.");
   },
   logout: async (req: Request, res: Response) => {
     req.session.userId = null;

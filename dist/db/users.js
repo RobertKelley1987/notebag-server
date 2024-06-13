@@ -45,7 +45,7 @@ function getUserByEmail(email) {
             return { id: user.user_id, email: user.email, password: user.password };
         }
         catch (error) {
-            throw new express_error_1.ExpressError(500, "Failed to register new user.");
+            throw new express_error_1.ExpressError(500, "Failed to find user.");
         }
     });
 }

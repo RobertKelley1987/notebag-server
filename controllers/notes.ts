@@ -1,4 +1,10 @@
-import { createNote, getNoteById, getUserNotes, updateNote } from "../db/notes";
+import {
+  createNote,
+  deleteNote,
+  getNoteById,
+  getUserNotes,
+  updateNote,
+} from "../db/notes";
 import { ExpressError } from "../util/express-error";
 import type { Request, Response } from "express";
 
@@ -40,6 +46,11 @@ const notes = {
     const { noteId } = req.params;
     const note = await getNoteById(noteId);
     res.status(200).send({ note });
+  },
+  delete: async (req: Request, res: Response) => {
+    const { noteId } = req.params;
+    const { id } = await deleteNote(noteId);
+    res.status(200).send({ id });
   },
 };
 

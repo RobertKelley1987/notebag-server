@@ -31,15 +31,15 @@ const users = {
         if (!email || !password) {
             throw new express_error_1.ExpressError(400, "Email and password are both required.");
         }
-        const foundUser = yield (0, users_1.getUserByEmail)(email);
+        const foundUser = yield (0, users_1.getUserByEmail)(email).catch((error) => {
+            throw new express_error_1.ExpressError(400, "Invalid credentials.");
+        });
         const passwordValidated = yield bcryptjs_1.default.compare(password, foundUser.password);
         if (passwordValidated) {
             req.session.userId = foundUser.id;
             res.status(200).send({ user: foundUser });
         }
-        else {
-            throw new express_error_1.ExpressError(400, "Invalid credentials.");
-        }
+        throw new express_error_1.ExpressError(400, "Invalid credentials.");
     }),
     logout: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         req.session.userId = null;

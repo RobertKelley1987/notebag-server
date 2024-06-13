@@ -36,6 +36,6 @@ export async function getUserByEmail(email: string) {
     const user = res[0];
     return { id: user.user_id, email: user.email, password: user.password };
   } catch (error) {
-    throw new ExpressError(500, "Failed to register new user.");
+    throw new ExpressError(500, "Failed to find user.");
   }
 }

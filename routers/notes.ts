@@ -8,5 +8,6 @@ router.get("/", notes.findAll);
 router.post("/", notes.create);
 router.get("/:noteId", notes.findOne);
 router.put("/:noteId", notes.update);
+router.delete("/:noteId", notes.delete);
 
 export default router;

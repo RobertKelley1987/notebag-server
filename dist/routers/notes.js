@@ -12,4 +12,5 @@ router.get("/", notes_1.default.findAll);
 router.post("/", notes_1.default.create);
 router.get("/:noteId", notes_1.default.findOne);
 router.put("/:noteId", notes_1.default.update);
+router.delete("/:noteId", notes_1.default.delete);
 exports.default = router;

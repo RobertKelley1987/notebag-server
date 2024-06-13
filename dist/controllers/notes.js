@@ -43,5 +43,10 @@ const notes = {
         const note = yield (0, notes_1.getNoteById)(noteId);
         res.status(200).send({ note });
     }),
+    delete: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { noteId } = req.params;
+        const { id } = yield (0, notes_1.deleteNote)(noteId);
+        res.status(200).send({ id });
+    }),
 };
 exports.default = notes;
