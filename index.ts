@@ -2,6 +2,7 @@ import express from "express";
 import expressSession from "./session";
 import userRoutes from "./routers/users";
 import noteRoutes from "./routers/notes";
+import tagRoutes from "./routers/tags";
 import { errorHandler } from "./error-handler";
 
 const port = process.env.PORT;
@@ -19,6 +20,7 @@ app.use(expressSession());
 
 app.use("/users", userRoutes);
 app.use("/notes", noteRoutes);
+app.use("/tags", tagRoutes);
 
 app.use(errorHandler);
 

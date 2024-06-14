@@ -15,7 +15,7 @@ export async function createUser(email: string, password: string) {
 
     const sql = "INSERT INTO users(user_id, email, password) VALUES(?, ?, ?)";
     const values = [id, email, password];
-    await db.query(sql, values);
+    await db.query<DBUser[]>(sql, values);
 
     return { id, email, password };
   } catch (error) {
