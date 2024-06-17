@@ -30,11 +30,11 @@ export async function createUser(email: string, password: string) {
 
 export async function getUserByEmail(email: string) {
   try {
-    const sql = "SELECT * FROM users WHERE email = ?";
+    const sql =
+      "SELECT user_id AS id, email, password FROM users WHERE email = ?";
     const values = [email];
     const [res] = await db.query<DBUser[]>(sql, values);
-    const user = res[0];
-    return { id: user.user_id, email: user.email, password: user.password };
+    return res[0];
   } catch (error) {
     throw new ExpressError(500, "Failed to find user.");
   }

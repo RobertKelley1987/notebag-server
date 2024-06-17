@@ -1,10 +1,20 @@
 import { Request, Response } from "express";
-import { createTag, getUserTags } from "../db/tags";
+import { createTag, deleteTag, getUserTags } from "../db/tags";
+import { ExpressError } from "../util/express-error";
 
 const tags = {
   create: async (req: Request, res: Response) => {
     const userId = req.session.userId as string;
     const { name } = req.body;
+    if (!name) {
+      throw new ExpressError(400, "Name is required to create a new tag.");
+    }
+
+    const allTags = await getUserTags(userId);
+    if (allTags.findIndex((tag) => tag.name === name) !== -1) {
+      throw new ExpressError(400, "Tag already exists.");
+    }
+
     const newTag = await createTag(userId, name);
     res.status(200).send({ tag: newTag });
   },
@@ -12,6 +22,11 @@ const tags = {
     const userId = req.session.userId as string;
     const tags = await getUserTags(userId);
     res.status(200).send({ tags });
+  },
+  delete: async (req: Request, res: Response) => {
+    const { tagId } = req.params;
+    const { id } = await deleteTag(tagId);
+    res.status(200).send({ id });
   },
 };
 

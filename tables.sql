@@ -13,7 +13,7 @@ CREATE TABLE users (
 
 
 CREATE TABLE notes (
-    note_id varchar(36) NOT NULL UNIQUE PRIMARY KEY,
+    note_id varchar(36) PRIMARY KEY,
     title varchar(255),
     content TEXT,
     position INT UNSIGNED default 0,

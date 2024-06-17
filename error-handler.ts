@@ -13,6 +13,6 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
       error: expressError,
     });
   } else {
-    res.send({ error: error });
+    res.send({ error });
   }
 };

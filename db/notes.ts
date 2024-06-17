@@ -10,12 +10,6 @@ interface DBNote extends RowDataPacket {
   position: number;
 }
 
-const formatNote = (note: DBNote) => {
-  delete note.user_id;
-  const { note_id, title, content, position } = note;
-  return { id: note_id, title, content, position };
-};
-
 export async function createNote(
   noteId: string,
   userId: string,
@@ -59,11 +53,12 @@ export async function updateNote(
 
 export async function getUserNotes(userId: string) {
   try {
-    const sql = "SELECT * FROM notes WHERE user_id = ? ORDER BY position ASC";
+    const sql =
+      "SELECT note_id AS id, title, content, position FROM notes WHERE user_id = ? ORDER BY position ASC";
     const values = [userId];
 
     const [notes] = await db.query<DBNote[]>(sql, values);
-    return notes.map((note) => formatNote(note));
+    return notes;
   } catch (error) {
     throw new ExpressError(500, "Failed to fetch notes from db.");
   }
@@ -71,11 +66,12 @@ export async function getUserNotes(userId: string) {
 
 export async function getNoteById(noteId: string) {
   try {
-    const sql = "SELECT * FROM notes WHERE note_id = ?";
+    const sql =
+      "SELECT note_id AS id, title, content, position FROM notes WHERE note_id = ?";
     const values = [noteId];
 
     const [notes] = await db.query<DBNote[]>(sql, values);
-    return formatNote(notes[0]);
+    return notes[0];
   } catch (error) {
     throw new ExpressError(500, "Failed to find note in db.");
   }

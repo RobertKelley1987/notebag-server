@@ -38,11 +38,10 @@ exports.createUser = createUser;
 function getUserByEmail(email) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const sql = "SELECT * FROM users WHERE email = ?";
+            const sql = "SELECT user_id AS id, email, password FROM users WHERE email = ?";
             const values = [email];
             const [res] = yield config_1.default.query(sql, values);
-            const user = res[0];
-            return { id: user.user_id, email: user.email, password: user.password };
+            return res[0];
         }
         catch (error) {
             throw new express_error_1.ExpressError(500, "Failed to find user.");

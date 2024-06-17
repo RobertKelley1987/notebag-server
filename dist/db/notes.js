@@ -15,11 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteNote = exports.getNoteById = exports.getUserNotes = exports.updateNote = exports.createNote = void 0;
 const config_1 = __importDefault(require("./config"));
 const express_error_1 = require("../util/express-error");
-const formatNote = (note) => {
-    delete note.user_id;
-    const { note_id, title, content, position } = note;
-    return { id: note_id, title, content, position };
-};
 function createNote(noteId, userId, title, content) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -57,10 +52,10 @@ exports.updateNote = updateNote;
 function getUserNotes(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const sql = "SELECT * FROM notes WHERE user_id = ? ORDER BY position ASC";
+            const sql = "SELECT note_id AS id, title, content, position FROM notes WHERE user_id = ? ORDER BY position ASC";
             const values = [userId];
             const [notes] = yield config_1.default.query(sql, values);
-            return notes.map((note) => formatNote(note));
+            return notes;
         }
         catch (error) {
             throw new express_error_1.ExpressError(500, "Failed to fetch notes from db.");
@@ -71,10 +66,10 @@ exports.getUserNotes = getUserNotes;
 function getNoteById(noteId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const sql = "SELECT * FROM notes WHERE note_id = ?";
+            const sql = "SELECT note_id AS id, title, content, position FROM notes WHERE note_id = ?";
             const values = [noteId];
             const [notes] = yield config_1.default.query(sql, values);
-            return formatNote(notes[0]);
+            return notes[0];
         }
         catch (error) {
             throw new express_error_1.ExpressError(500, "Failed to find note in db.");

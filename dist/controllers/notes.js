@@ -10,6 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const notes_1 = require("../db/notes");
+const notetags_1 = require("../db/notetags");
+const tags_1 = require("../db/tags");
 const express_error_1 = require("../util/express-error");
 const notes = {
     create: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -33,9 +35,33 @@ const notes = {
         const updatedNote = yield (0, notes_1.updateNote)(noteId, title, content);
         res.status(200).send({ note: updatedNote });
     }),
+    updateTags: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { noteId } = req.params;
+        const { tagId } = req.body;
+        console.log(tagId);
+        const noteTags = yield (0, notetags_1.findNoteTags)(noteId);
+        console.log(noteTags);
+        const tagIndex = noteTags.findIndex((tag) => tag.tagId === tagId);
+        console.log(tagIndex);
+        if (tagIndex === -1) {
+            yield (0, notetags_1.createNoteTag)(noteId, tagId);
+        }
+        else {
+            yield (0, notetags_1.deleteNoteTag)(noteId, tagId);
+        }
+        res.status(200).send({ noteId, tagId });
+    }),
     findAll: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const userId = req.session.userId;
+        // Fetch notes (title and content)
         const notes = yield (0, notes_1.getUserNotes)(userId);
+        // Fetch tags for each note
+        const tagPromises = notes.map((note) => (0, tags_1.getNoteTags)(note.id));
+        const noteTags = yield Promise.all(tagPromises);
+        // Assign tags to notes before returning to client
+        for (let i = 0; i < notes.length; i++) {
+            notes[i].tags = noteTags[i];
+        }
         res.status(200).send({ notes });
     }),
     findOne: (req, res) => __awaiter(void 0, void 0, void 0, function* () {

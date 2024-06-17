@@ -14,7 +14,7 @@ const errorHandler = (error, req, res, next) => {
         });
     }
     else {
-        res.send({ error: error });
+        res.send({ error });
     }
 };
 exports.errorHandler = errorHandler;

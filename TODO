@@ -1,2 +1,4 @@
 Test updated_at on notes in db
 SESSION STORE
+Figure out if i still need to send note ids from the front end when notes are created
+Look at db / controller structure for tags and note tags
