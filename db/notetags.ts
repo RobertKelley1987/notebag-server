@@ -1,6 +1,6 @@
 import db from "./config";
 import { v4 as uuid } from "uuid";
-import { ExpressError } from "../util/express-error";
+import { ExpressError } from "../lib/express-error";
 import type { RowDataPacket } from "mysql2";
 
 interface DBNoteTag extends RowDataPacket {
@@ -18,7 +18,6 @@ export async function createNoteTag(noteId: string, tagId: string) {
     await db.query<DBNoteTag[]>(sql, values);
     return { noteTagId, noteId, tagId };
   } catch (error) {
-    console.log(error);
     throw new ExpressError(500, "Failed to add tag to note in db.");
   }
 }

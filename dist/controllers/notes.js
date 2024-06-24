@@ -10,9 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const notes_1 = require("../db/notes");
-const notetags_1 = require("../db/notetags");
 const tags_1 = require("../db/tags");
-const express_error_1 = require("../util/express-error");
+const notetags_1 = require("../db/notetags");
+const express_error_1 = require("../lib/express-error");
 const notes = {
     create: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { noteId, title, content } = req.body;
@@ -22,9 +22,9 @@ const notes = {
         if (!title && !content) {
             throw new express_error_1.ExpressError(400, "Both title and content of this note are empty.");
         }
-        const userId = req.session.userId;
+        const userId = req.user.id;
         const newNote = yield (0, notes_1.createNote)(noteId, userId, title, content);
-        res.status(200).send({ note: newNote });
+        res.status(201).send({ note: newNote });
     }),
     update: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { noteId } = req.params;
@@ -38,11 +38,8 @@ const notes = {
     updateTags: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { noteId } = req.params;
         const { tagId } = req.body;
-        console.log(tagId);
         const noteTags = yield (0, notetags_1.findNoteTags)(noteId);
-        console.log(noteTags);
         const tagIndex = noteTags.findIndex((tag) => tag.tagId === tagId);
-        console.log(tagIndex);
         if (tagIndex === -1) {
             yield (0, notetags_1.createNoteTag)(noteId, tagId);
         }
@@ -52,7 +49,8 @@ const notes = {
         res.status(200).send({ noteId, tagId });
     }),
     findAll: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const userId = req.session.userId;
+        console.log("FIND NOTES");
+        const userId = req.user.id;
         // Fetch notes (title and content)
         const notes = yield (0, notes_1.getUserNotes)(userId);
         // Fetch tags for each note

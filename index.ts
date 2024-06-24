@@ -1,26 +1,21 @@
 import express from "express";
-import expressSession from "./session";
+import cookieParser from "cookie-parser";
 import userRoutes from "./routers/users";
 import noteRoutes from "./routers/notes";
 import tagRoutes from "./routers/tags";
+import tokenRoutes from "./routers/tokens";
 import { errorHandler } from "./error-handler";
 
 const port = process.env.PORT;
-
-declare module "express-session" {
-  interface SessionData {
-    userId: string | null;
-  }
-}
-
 const app = express();
 
+app.use(cookieParser());
 app.use(express.json());
-app.use(expressSession());
 
 app.use("/users", userRoutes);
 app.use("/notes", noteRoutes);
 app.use("/tags", tagRoutes);
+app.use("/tokens", tokenRoutes);
 
 app.use(errorHandler);
 

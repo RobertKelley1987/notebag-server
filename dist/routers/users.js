@@ -9,5 +9,4 @@ const router = express_1.default.Router({ mergeParams: true });
 router.post("/register", users_1.default.register);
 router.post("/login", users_1.default.login);
 router.post("/logout", users_1.default.logout);
-router.get("/sessions", users_1.default.getSession);
 exports.default = router;

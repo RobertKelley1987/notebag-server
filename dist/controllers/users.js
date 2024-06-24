@@ -13,8 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const express_error_1 = require("../util/express-error");
+const express_error_1 = require("../lib/express-error");
 const users_1 = require("../db/users");
+const tokens_1 = require("../lib/tokens");
+const tokens_2 = require("../db/tokens");
 const users = {
     register: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { email, password } = req.body;
@@ -23,10 +25,17 @@ const users = {
         }
         const hashedPassword = yield bcryptjs_1.default.hash(password, 12);
         const newUser = yield (0, users_1.createUser)(email, hashedPassword);
-        req.session.userId = newUser.id;
-        res.status(200).send({ user: newUser });
+        const { accessToken, refreshToken } = yield (0, tokens_1.generateTokens)({
+            id: newUser.id,
+        });
+        res.cookie("jwt", refreshToken, {
+            httpOnly: true,
+            maxAge: 24 * 60 * 60 * 1000,
+        });
+        res.status(201).json({ accessToken });
     }),
     login: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log("LOG IN");
         const { email, password } = req.body;
         if (!email || !password) {
             throw new express_error_1.ExpressError(400, "Email and password are both required.");
@@ -36,23 +45,20 @@ const users = {
         });
         const passwordValidated = yield bcryptjs_1.default.compare(password, foundUser.password);
         if (passwordValidated) {
-            req.session.userId = foundUser.id;
-            res.status(200).send({ user: foundUser });
+            const { accessToken, refreshToken } = yield (0, tokens_1.generateTokens)({
+                id: foundUser.id,
+            });
+            res.cookie("jwt", refreshToken, {
+                httpOnly: true,
+                maxAge: 24 * 60 * 60 * 1000,
+            });
+            res.status(201).json({ accessToken });
         }
         throw new express_error_1.ExpressError(400, "Invalid credentials.");
     }),
     logout: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        req.session.userId = null;
-        res.status(200).send({ success: "User successfully logged out " });
-    }),
-    getSession: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log("session");
-        if (!req.session.userId) {
-            res.status(200).send({ userId: "" });
-        }
-        else {
-            res.status(200).send({ userId: req.session.userId });
-        }
+        yield (0, tokens_2.deleteRefreshToken)(req.body.token);
+        return res.status(200).send({ success: "User is logged out." });
     }),
 };
 exports.default = users;

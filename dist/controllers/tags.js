@@ -10,10 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const tags_1 = require("../db/tags");
-const express_error_1 = require("../util/express-error");
+const express_error_1 = require("../lib/express-error");
 const tags = {
     create: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const userId = req.session.userId;
+        const userId = req.user.id;
         const { name } = req.body;
         if (!name) {
             throw new express_error_1.ExpressError(400, "Name is required to create a new tag.");
@@ -23,10 +23,10 @@ const tags = {
             throw new express_error_1.ExpressError(400, "Tag already exists.");
         }
         const newTag = yield (0, tags_1.createTag)(userId, name);
-        res.status(200).send({ tag: newTag });
+        res.status(201).send({ tag: newTag });
     }),
     findByUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const userId = req.session.userId;
+        const userId = req.user.id;
         const tags = yield (0, tags_1.getUserTags)(userId);
         res.status(200).send({ tags });
     }),

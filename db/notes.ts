@@ -1,5 +1,5 @@
 import db from "./config";
-import { ExpressError } from "../util/express-error";
+import { ExpressError } from "../lib/express-error";
 import type { RowDataPacket } from "mysql2";
 
 interface DBNote extends RowDataPacket {

@@ -8,7 +8,8 @@ CREATE TABLE tags (
 CREATE TABLE users (
     user_id varchar(36) PRIMARY KEY,
     email varchar(255) NOT NULL UNIQUE,
-    password varchar(255) NOT NULL
+    password varchar(255) NOT NULL,
+    refresh_token varchar(255)
 );
 
 

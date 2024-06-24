@@ -4,11 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const tags_1 = __importDefault(require("../controllers/tags"));
-const middleware_1 = require("../middleware");
+const tokens_1 = __importDefault(require("../controllers/tokens"));
 const router = express_1.default.Router({ mergeParams: true });
-router.use(middleware_1.authorizeToken);
-router.get("/", tags_1.default.findByUser);
-router.post("/", tags_1.default.create);
-router.delete("/:tagId", tags_1.default.delete);
+router.get("/", tokens_1.default.create);
 exports.default = router;

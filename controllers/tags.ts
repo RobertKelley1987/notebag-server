@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { createTag, deleteTag, getUserTags } from "../db/tags";
-import { ExpressError } from "../util/express-error";
+import { ExpressError } from "../lib/express-error";
 
 const tags = {
   create: async (req: Request, res: Response) => {
-    const userId = req.session.userId as string;
+    const userId = req.user.id;
     const { name } = req.body;
     if (!name) {
       throw new ExpressError(400, "Name is required to create a new tag.");
@@ -16,10 +16,10 @@ const tags = {
     }
 
     const newTag = await createTag(userId, name);
-    res.status(200).send({ tag: newTag });
+    res.status(201).send({ tag: newTag });
   },
   findByUser: async (req: Request, res: Response) => {
-    const userId = req.session.userId as string;
+    const userId = req.user.id;
     const tags = await getUserTags(userId);
     res.status(200).send({ tags });
   },

@@ -1,9 +1,9 @@
 import express from "express";
 import notes from "../controllers/notes";
-import { auth } from "../middleware";
+import { authorizeToken } from "../middleware";
 const router = express.Router({ mergeParams: true });
 
-router.use(auth);
+router.use(authorizeToken);
 router.get("/", notes.findAll);
 router.post("/", notes.create);
 router.get("/:noteId", notes.findOne);

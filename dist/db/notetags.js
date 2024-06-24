@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.findNoteTags = exports.deleteNoteTag = exports.createNoteTag = void 0;
 const config_1 = __importDefault(require("./config"));
 const uuid_1 = require("uuid");
-const express_error_1 = require("../util/express-error");
+const express_error_1 = require("../lib/express-error");
 function createNoteTag(noteId, tagId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -26,7 +26,6 @@ function createNoteTag(noteId, tagId) {
             return { noteTagId, noteId, tagId };
         }
         catch (error) {
-            console.log(error);
             throw new express_error_1.ExpressError(500, "Failed to add tag to note in db.");
         }
     });

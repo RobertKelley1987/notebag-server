@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteNote = exports.getNoteById = exports.getUserNotes = exports.updateNote = exports.createNote = void 0;
 const config_1 = __importDefault(require("./config"));
-const express_error_1 = require("../util/express-error");
+const express_error_1 = require("../lib/express-error");
 function createNote(noteId, userId, title, content) {
     return __awaiter(this, void 0, void 0, function* () {
         try {

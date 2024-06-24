@@ -7,7 +7,7 @@ const express_1 = __importDefault(require("express"));
 const notes_1 = __importDefault(require("../controllers/notes"));
 const middleware_1 = require("../middleware");
 const router = express_1.default.Router({ mergeParams: true });
-router.use(middleware_1.auth);
+router.use(middleware_1.authorizeToken);
 router.get("/", notes_1.default.findAll);
 router.post("/", notes_1.default.create);
 router.get("/:noteId", notes_1.default.findOne);

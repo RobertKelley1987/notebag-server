@@ -5,9 +5,9 @@ import {
   getUserNotes,
   updateNote,
 } from "../db/notes";
-import { createNoteTag, findNoteTags, deleteNoteTag } from "../db/notetags";
 import { getNoteTags } from "../db/tags";
-import { ExpressError } from "../util/express-error";
+import { createNoteTag, findNoteTags, deleteNoteTag } from "../db/notetags";
+import { ExpressError } from "../lib/express-error";
 import type { Request, Response } from "express";
 
 const notes = {
@@ -24,10 +24,10 @@ const notes = {
       );
     }
 
-    const userId = req.session.userId as string;
+    const userId = req.user.id;
     const newNote = await createNote(noteId, userId, title, content);
 
-    res.status(200).send({ note: newNote });
+    res.status(201).send({ note: newNote });
   },
   update: async (req: Request, res: Response) => {
     const { noteId } = req.params;
@@ -43,12 +43,8 @@ const notes = {
     const { noteId } = req.params;
     const { tagId } = req.body;
 
-    console.log(tagId);
-
     const noteTags = await findNoteTags(noteId);
-    console.log(noteTags);
     const tagIndex = noteTags.findIndex((tag) => tag.tagId === tagId);
-    console.log(tagIndex);
     if (tagIndex === -1) {
       await createNoteTag(noteId, tagId);
     } else {
@@ -58,7 +54,8 @@ const notes = {
     res.status(200).send({ noteId, tagId });
   },
   findAll: async (req: Request, res: Response) => {
-    const userId = req.session.userId as string;
+    console.log("FIND NOTES");
+    const userId = req.user.id;
 
     // Fetch notes (title and content)
     const notes = await getUserNotes(userId);
