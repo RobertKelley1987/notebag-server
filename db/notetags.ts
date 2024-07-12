@@ -34,6 +34,18 @@ export async function deleteNoteTag(noteId: string, tagId: string) {
   }
 }
 
+export async function deleteAllNoteTags(noteId: string) {
+  try {
+    const sql = "DELETE FROM note_tags WHERE note_id = ?";
+    const values = [noteId];
+    await db.query<DBNoteTag[]>(sql, values);
+    return { noteId };
+  } catch (error) {
+    console.log(error);
+    throw new ExpressError(500, "Failed to delete tag from note in db.");
+  }
+}
+
 export async function findNoteTags(noteId: string) {
   try {
     const sql =

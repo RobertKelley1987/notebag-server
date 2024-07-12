@@ -4,16 +4,23 @@ import {
   getNoteById,
   getUserNotes,
   updateNote,
+  updateNoteIsPinned,
 } from "../db/notes";
 import { getNoteTags } from "../db/tags";
-import { createNoteTag, findNoteTags, deleteNoteTag } from "../db/notetags";
+import {
+  createNoteTag,
+  findNoteTags,
+  deleteNoteTag,
+  deleteAllNoteTags,
+} from "../db/notetags";
 import { ExpressError } from "../lib/express-error";
 import type { Request, Response } from "express";
+import type { Tag } from "../types";
 
 const notes = {
   create: async (req: Request, res: Response) => {
-    const { noteId, title, content } = req.body;
-    if (!noteId) {
+    const { id, title, content, pinned = false, tags } = req.body;
+    if (!id) {
       throw new ExpressError(400, "Note id is required.");
     }
 
@@ -24,19 +31,45 @@ const notes = {
       );
     }
 
+    // Create new note
     const userId = req.user.id;
-    const newNote = await createNote(noteId, userId, title, content);
+    const newNote = await createNote(id, userId, title, content, pinned);
+
+    // Add tags to note
+    if (tags.length > 0) {
+      const tagPromises = tags.map((tag: Tag) =>
+        createNoteTag(newNote.id, tag.id)
+      );
+      await Promise.all(tagPromises);
+    }
 
     res.status(201).send({ note: newNote });
   },
   update: async (req: Request, res: Response) => {
     const { noteId } = req.params;
-    const { title, content } = req.body;
+    const { title, content, pinned = false, tags } = req.body;
     if (!noteId) {
       throw new ExpressError(400, "Note id is required to update note.");
     }
 
-    const updatedNote = await updateNote(noteId, title, content);
+    // Remove previous note tags and add provided tags
+    await deleteAllNoteTags(noteId);
+    if (tags.length > 0) {
+      const tagPromises = tags.map((tag: Tag) => createNoteTag(noteId, tag.id));
+      await Promise.all(tagPromises);
+    }
+
+    const updatedNote = await updateNote(noteId, title, content, pinned);
+    res.status(200).send({ note: updatedNote });
+  },
+  updatePinned: async (req: Request, res: Response) => {
+    const { noteId } = req.params;
+    const { pinned } = req.body;
+    if (!noteId) {
+      throw new ExpressError(400, "Note id is required to update note.");
+    }
+
+    const updatedNote = await updateNoteIsPinned(noteId, pinned);
     res.status(200).send({ note: updatedNote });
   },
   updateTags: async (req: Request, res: Response) => {
@@ -54,9 +87,7 @@ const notes = {
     res.status(200).send({ noteId, tagId });
   },
   findAll: async (req: Request, res: Response) => {
-    console.log("FIND NOTES");
     const userId = req.user.id;
-
     // Fetch notes (title and content)
     const notes = await getUserNotes(userId);
 

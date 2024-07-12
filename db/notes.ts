@@ -7,6 +7,7 @@ interface DBNote extends RowDataPacket {
   user_id?: string;
   title?: string;
   content?: string;
+  pinned?: boolean;
   position: number;
 }
 
@@ -14,7 +15,8 @@ export async function createNote(
   noteId: string,
   userId: string,
   title: string,
-  content: string
+  content: string,
+  pinned: boolean
 ) {
   try {
     // Shift position of all user notes.
@@ -24,8 +26,8 @@ export async function createNote(
 
     // Insert new note at position zero.
     const sql =
-      "INSERT INTO notes(note_id, title, content, user_id) VALUES(?, ?, ?, ?)";
-    const values = [noteId, title, content, userId];
+      "INSERT INTO notes(note_id, title, content, pinned, user_id) VALUES(?, ?, ?, ?, ?)";
+    const values = [noteId, title, content, pinned, userId];
     await db.query<DBNote[]>(sql, values);
 
     return { id: noteId, title, content, position: 0 };
@@ -37,16 +39,29 @@ export async function createNote(
 export async function updateNote(
   noteId: string,
   title: string,
-  content: string
+  content: string,
+  pinned: boolean
 ) {
   try {
-    const sql = "UPDATE notes SET title = ?, content = ? WHERE note_id = ?";
-    const values = [title, content, noteId];
+    const sql =
+      "UPDATE notes SET title = ?, content = ?, pinned = ? WHERE note_id = ?";
+    const values = [title, content, pinned, noteId];
     await db.query<DBNote[]>(sql, values);
 
     return { id: noteId, title, content };
   } catch (error) {
-    console.log(error);
+    throw new ExpressError(500, "Failed to update note in db.");
+  }
+}
+
+export async function updateNoteIsPinned(noteId: string, pinned: boolean) {
+  try {
+    const sql = "UPDATE notes SET pinned = ? WHERE note_id = ?";
+    const values = [pinned, noteId];
+    await db.query<DBNote[]>(sql, values);
+
+    return { id: noteId, pinned };
+  } catch (error) {
     throw new ExpressError(500, "Failed to update note in db.");
   }
 }
@@ -54,7 +69,7 @@ export async function updateNote(
 export async function getUserNotes(userId: string) {
   try {
     const sql =
-      "SELECT note_id AS id, title, content, position FROM notes WHERE user_id = ? ORDER BY position ASC";
+      "SELECT note_id AS id, title, content, pinned, position FROM notes WHERE user_id = ? ORDER BY position ASC";
     const values = [userId];
 
     const [notes] = await db.query<DBNote[]>(sql, values);

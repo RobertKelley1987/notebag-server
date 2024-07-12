@@ -12,10 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteNote = exports.getNoteById = exports.getUserNotes = exports.updateNote = exports.createNote = void 0;
+exports.deleteNote = exports.getNoteById = exports.getUserNotes = exports.updateNoteIsPinned = exports.updateNote = exports.createNote = void 0;
 const config_1 = __importDefault(require("./config"));
 const express_error_1 = require("../lib/express-error");
-function createNote(noteId, userId, title, content) {
+function createNote(noteId, userId, title, content, pinned) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             // Shift position of all user notes.
@@ -23,8 +23,8 @@ function createNote(noteId, userId, title, content) {
             const posValues = [userId];
             yield config_1.default.query(posSql, posValues);
             // Insert new note at position zero.
-            const sql = "INSERT INTO notes(note_id, title, content, user_id) VALUES(?, ?, ?, ?)";
-            const values = [noteId, title, content, userId];
+            const sql = "INSERT INTO notes(note_id, title, content, pinned, user_id) VALUES(?, ?, ?, ?, ?)";
+            const values = [noteId, title, content, pinned, userId];
             yield config_1.default.query(sql, values);
             return { id: noteId, title, content, position: 0 };
         }
@@ -34,25 +34,38 @@ function createNote(noteId, userId, title, content) {
     });
 }
 exports.createNote = createNote;
-function updateNote(noteId, title, content) {
+function updateNote(noteId, title, content, pinned) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const sql = "UPDATE notes SET title = ?, content = ? WHERE note_id = ?";
-            const values = [title, content, noteId];
+            const sql = "UPDATE notes SET title = ?, content = ?, pinned = ? WHERE note_id = ?";
+            const values = [title, content, pinned, noteId];
             yield config_1.default.query(sql, values);
             return { id: noteId, title, content };
         }
         catch (error) {
-            console.log(error);
             throw new express_error_1.ExpressError(500, "Failed to update note in db.");
         }
     });
 }
 exports.updateNote = updateNote;
+function updateNoteIsPinned(noteId, pinned) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const sql = "UPDATE notes SET pinned = ? WHERE note_id = ?";
+            const values = [pinned, noteId];
+            yield config_1.default.query(sql, values);
+            return { id: noteId, pinned };
+        }
+        catch (error) {
+            throw new express_error_1.ExpressError(500, "Failed to update note in db.");
+        }
+    });
+}
+exports.updateNoteIsPinned = updateNoteIsPinned;
 function getUserNotes(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const sql = "SELECT note_id AS id, title, content, position FROM notes WHERE user_id = ? ORDER BY position ASC";
+            const sql = "SELECT note_id AS id, title, content, pinned, position FROM notes WHERE user_id = ? ORDER BY position ASC";
             const values = [userId];
             const [notes] = yield config_1.default.query(sql, values);
             return notes;

@@ -14,8 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const users_1 = require("../db/users");
-const tokens_1 = require("../db/tokens");
-const tokens_2 = require("../lib/tokens");
+const tokens_1 = require("../lib/tokens");
 const express_error_1 = require("../lib/express-error");
 const tokens = {
     create: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -32,14 +31,9 @@ const tokens = {
             if (err)
                 throw new express_error_1.ExpressError(403, "User not authorized.");
             const user = payload;
-            const accessToken = (0, tokens_2.generateAccessToken)({ id: user.id });
+            const accessToken = (0, tokens_1.generateAccessToken)({ id: user.id });
             return res.json({ accessToken });
         });
-    }),
-    delete: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const refreshToken = req.body.token;
-        yield (0, tokens_1.deleteRefreshToken)(refreshToken);
-        return res.status(200).send({ success: "Token deleted." });
     }),
 };
 exports.default = tokens;

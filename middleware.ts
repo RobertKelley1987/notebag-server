@@ -5,7 +5,6 @@ import type { User } from "./types";
 
 export const authorizeToken: RequestHandler = async (req, res, next) => {
   const authHeaders = req.headers["authorization"];
-  console.log(req.headers);
   if (!authHeaders) throw new ExpressError(401, "User not authorized.");
 
   const token = authHeaders?.split(" ")[1];
@@ -16,8 +15,7 @@ export const authorizeToken: RequestHandler = async (req, res, next) => {
 
   jwt.verify(token, key, (err, payload) => {
     if (err) throw new ExpressError(403, "User not authorized.");
-
-    const user = <User>payload; // Cast User type to payload
+    const user = <User>payload;
     req.user = { id: user.id };
     next();
   });

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findNoteTags = exports.deleteNoteTag = exports.createNoteTag = void 0;
+exports.findNoteTags = exports.deleteAllNoteTags = exports.deleteNoteTag = exports.createNoteTag = void 0;
 const config_1 = __importDefault(require("./config"));
 const uuid_1 = require("uuid");
 const express_error_1 = require("../lib/express-error");
@@ -46,6 +46,21 @@ function deleteNoteTag(noteId, tagId) {
     });
 }
 exports.deleteNoteTag = deleteNoteTag;
+function deleteAllNoteTags(noteId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const sql = "DELETE FROM note_tags WHERE note_id = ?";
+            const values = [noteId];
+            yield config_1.default.query(sql, values);
+            return { noteId };
+        }
+        catch (error) {
+            console.log(error);
+            throw new express_error_1.ExpressError(500, "Failed to delete tag from note in db.");
+        }
+    });
+}
+exports.deleteAllNoteTags = deleteAllNoteTags;
 function findNoteTags(noteId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {

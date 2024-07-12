@@ -10,5 +10,6 @@ const router = express_1.default.Router({ mergeParams: true });
 router.use(middleware_1.authorizeToken);
 router.get("/", tags_1.default.findByUser);
 router.post("/", tags_1.default.create);
+router.put("/:tagId", tags_1.default.update);
 router.delete("/:tagId", tags_1.default.delete);
 exports.default = router;

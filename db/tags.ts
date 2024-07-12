@@ -13,10 +13,9 @@ interface DBUserTag extends RowDataPacket {
   user_id: string;
 }
 
-export async function createTag(userId: string, name: string) {
+export async function createTag(userId: string, tagId: string, name: string) {
   try {
     // Create new tag
-    const tagId = uuid();
     const tagSql = "INSERT INTO tags(tag_id, name) VALUES(?, ?)";
     const tagValues = [tagId, name];
     await db.query<DBTag[]>(tagSql, tagValues);
@@ -33,6 +32,18 @@ export async function createTag(userId: string, name: string) {
   } catch (error) {
     console.log(error);
     throw new ExpressError(500, "Failed to create new tag in db.");
+  }
+}
+
+export async function updateTag(tagId: string, name: string) {
+  try {
+    const sql = "UPDATE tags SET name = ? WHERE tag_id = ?";
+    const values = [name, tagId];
+    await db.query<DBTag[]>(sql, values);
+
+    return { id: tagId, name };
+  } catch (error) {
+    throw new ExpressError(500, "Failed to update tag in db.");
   }
 }
 

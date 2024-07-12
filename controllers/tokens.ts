@@ -25,11 +25,6 @@ const tokens = {
       return res.json({ accessToken });
     });
   },
-  delete: async (req: Request, res: Response) => {
-    const refreshToken = req.body.token;
-    await deleteRefreshToken(refreshToken);
-    return res.status(200).send({ success: "Token deleted." });
-  },
 };
 
 export default tokens;

@@ -13,5 +13,6 @@ router.post("/", notes_1.default.create);
 router.get("/:noteId", notes_1.default.findOne);
 router.put("/:noteId", notes_1.default.update);
 router.put("/:noteId/tags", notes_1.default.updateTags);
+router.put("/:noteId/pinned", notes_1.default.updatePinned);
 router.delete("/:noteId", notes_1.default.delete);
 exports.default = router;

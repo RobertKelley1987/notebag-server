@@ -12,15 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteTag = exports.getNoteTags = exports.getUserTags = exports.createTag = void 0;
+exports.deleteTag = exports.getNoteTags = exports.getUserTags = exports.updateTag = exports.createTag = void 0;
 const config_1 = __importDefault(require("./config"));
 const uuid_1 = require("uuid");
 const express_error_1 = require("../lib/express-error");
-function createTag(userId, name) {
+function createTag(userId, tagId, name) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             // Create new tag
-            const tagId = (0, uuid_1.v4)();
             const tagSql = "INSERT INTO tags(tag_id, name) VALUES(?, ?)";
             const tagValues = [tagId, name];
             yield config_1.default.query(tagSql, tagValues);
@@ -39,6 +38,20 @@ function createTag(userId, name) {
     });
 }
 exports.createTag = createTag;
+function updateTag(tagId, name) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const sql = "UPDATE tags SET name = ? WHERE tag_id = ?";
+            const values = [name, tagId];
+            yield config_1.default.query(sql, values);
+            return { id: tagId, name };
+        }
+        catch (error) {
+            throw new express_error_1.ExpressError(500, "Failed to update tag in db.");
+        }
+    });
+}
+exports.updateTag = updateTag;
 function getUserTags(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {

@@ -14,7 +14,10 @@ const express_error_1 = require("../lib/express-error");
 const tags = {
     create: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const userId = req.user.id;
-        const { name } = req.body;
+        const { tagId, name } = req.body;
+        if (!tagId) {
+            throw new express_error_1.ExpressError(400, "Tag id is required to create a new tag.");
+        }
         if (!name) {
             throw new express_error_1.ExpressError(400, "Name is required to create a new tag.");
         }
@@ -22,8 +25,17 @@ const tags = {
         if (allTags.findIndex((tag) => tag.name === name) !== -1) {
             throw new express_error_1.ExpressError(400, "Tag already exists.");
         }
-        const newTag = yield (0, tags_1.createTag)(userId, name);
+        const newTag = yield (0, tags_1.createTag)(userId, tagId, name);
         res.status(201).send({ tag: newTag });
+    }),
+    update: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { tagId } = req.params;
+        const { name } = req.body;
+        if (!name) {
+            throw new express_error_1.ExpressError(400, "Name is required to update a tag.");
+        }
+        const updatedTag = yield (0, tags_1.updateTag)(tagId, name);
+        res.status(201).send({ tag: updatedTag });
     }),
     findByUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const userId = req.user.id;
