@@ -51,7 +51,7 @@ exports.updateNote = updateNote;
 function updateNoteIsPinned(noteId, pinned) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const sql = "UPDATE notes SET pinned = ? WHERE note_id = ?";
+            const sql = "UPDATE notes SET pinned = ?, pinned_at = now() WHERE note_id = ?";
             const values = [pinned, noteId];
             yield config_1.default.query(sql, values);
             return { id: noteId, pinned };
@@ -65,7 +65,7 @@ exports.updateNoteIsPinned = updateNoteIsPinned;
 function getUserNotes(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const sql = "SELECT note_id AS id, title, content, pinned, position FROM notes WHERE user_id = ? ORDER BY position ASC";
+            const sql = "SELECT note_id AS id, title, content, pinned, pinned_at AS pinnedAt, position FROM notes WHERE user_id = ? ORDER BY position ASC";
             const values = [userId];
             const [notes] = yield config_1.default.query(sql, values);
             return notes;
@@ -79,7 +79,7 @@ exports.getUserNotes = getUserNotes;
 function getNoteById(noteId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const sql = "SELECT note_id AS id, title, content, position FROM notes WHERE note_id = ?";
+            const sql = "SELECT note_id AS id, title, content, pinned, pinned_at AS pinnedAt, position FROM notes WHERE note_id = ?";
             const values = [noteId];
             const [notes] = yield config_1.default.query(sql, values);
             return notes[0];

@@ -8,6 +8,7 @@ interface DBNote extends RowDataPacket {
   title?: string;
   content?: string;
   pinned?: boolean;
+  pinnedAt: string;
   position: number;
 }
 
@@ -56,7 +57,8 @@ export async function updateNote(
 
 export async function updateNoteIsPinned(noteId: string, pinned: boolean) {
   try {
-    const sql = "UPDATE notes SET pinned = ? WHERE note_id = ?";
+    const sql =
+      "UPDATE notes SET pinned = ?, pinned_at = now() WHERE note_id = ?";
     const values = [pinned, noteId];
     await db.query<DBNote[]>(sql, values);
 
@@ -69,7 +71,7 @@ export async function updateNoteIsPinned(noteId: string, pinned: boolean) {
 export async function getUserNotes(userId: string) {
   try {
     const sql =
-      "SELECT note_id AS id, title, content, pinned, position FROM notes WHERE user_id = ? ORDER BY position ASC";
+      "SELECT note_id AS id, title, content, pinned, pinned_at AS pinnedAt, position FROM notes WHERE user_id = ? ORDER BY position ASC";
     const values = [userId];
 
     const [notes] = await db.query<DBNote[]>(sql, values);
@@ -82,7 +84,7 @@ export async function getUserNotes(userId: string) {
 export async function getNoteById(noteId: string) {
   try {
     const sql =
-      "SELECT note_id AS id, title, content, position FROM notes WHERE note_id = ?";
+      "SELECT note_id AS id, title, content, pinned, pinned_at AS pinnedAt, position FROM notes WHERE note_id = ?";
     const values = [noteId];
 
     const [notes] = await db.query<DBNote[]>(sql, values);

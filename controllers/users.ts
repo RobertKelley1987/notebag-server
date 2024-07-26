@@ -1,14 +1,20 @@
 import bcrypt from "bcryptjs";
 import { ExpressError } from "../lib/express-error";
 import { createUser, getUserByEmail, getUserByToken } from "../db/users";
+import { deleteRefreshToken } from "../db/tokens";
 import { generateTokens } from "../lib/tokens";
 import type { Request, Response } from "express";
-import { deleteRefreshToken } from "../db/tokens";
+import type { CookieOptions } from "express";
 
-const COOKIE_OPTIONS = {
+const cookieOptions: CookieOptions = {
   httpOnly: true,
   maxAge: 24 * 60 * 60 * 1000,
 };
+
+if (process.env.NODE_ENV !== "development") {
+  cookieOptions.domain = "notebag.site";
+  cookieOptions.secure = false;
+}
 
 const users = {
   register: async (req: Request, res: Response) => {
@@ -24,7 +30,7 @@ const users = {
       id: newUser.id,
     });
 
-    res.cookie("jwt", refreshToken, COOKIE_OPTIONS);
+    res.cookie("jwt", refreshToken, cookieOptions);
     res.status(201).json({ accessToken });
   },
   login: async (req: Request, res: Response) => {
@@ -46,7 +52,7 @@ const users = {
         id: foundUser.id,
       });
 
-      res.cookie("jwt", refreshToken, COOKIE_OPTIONS);
+      res.cookie("jwt", refreshToken, cookieOptions);
       return res.status(201).json({ accessToken });
     }
 
@@ -63,13 +69,13 @@ const users = {
     // If user with token is not found, clear cookies and return response.
     const foundUser = await getUserByToken(refreshToken);
     if (!foundUser) {
-      res.clearCookie("jwt", COOKIE_OPTIONS);
+      res.clearCookie("jwt", cookieOptions);
       return res.status(200).send({ success: "User is logged out. " });
     }
 
     // Delete refresh token from user, clear cookie and return response.
     await deleteRefreshToken(foundUser.id);
-    res.clearCookie("jwt", COOKIE_OPTIONS);
+    res.clearCookie("jwt", cookieOptions);
     return res.status(200).send({ success: "User is logged out." });
   },
 };

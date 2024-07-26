@@ -15,12 +15,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const express_error_1 = require("../lib/express-error");
 const users_1 = require("../db/users");
-const tokens_1 = require("../lib/tokens");
-const tokens_2 = require("../db/tokens");
-const COOKIE_OPTIONS = {
+const tokens_1 = require("../db/tokens");
+const tokens_2 = require("../lib/tokens");
+const cookieOptions = {
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000,
 };
+if (process.env.NODE_ENV !== "development") {
+    cookieOptions.domain = "notebag.site";
+    cookieOptions.secure = false;
+}
 const users = {
     register: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { email, password } = req.body;
@@ -29,10 +33,10 @@ const users = {
         }
         const hashedPassword = yield bcryptjs_1.default.hash(password, 12);
         const newUser = yield (0, users_1.createUser)(email, hashedPassword);
-        const { accessToken, refreshToken } = yield (0, tokens_1.generateTokens)({
+        const { accessToken, refreshToken } = yield (0, tokens_2.generateTokens)({
             id: newUser.id,
         });
-        res.cookie("jwt", refreshToken, COOKIE_OPTIONS);
+        res.cookie("jwt", refreshToken, cookieOptions);
         res.status(201).json({ accessToken });
     }),
     login: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -45,10 +49,10 @@ const users = {
             throw new express_error_1.ExpressError(400, "Invalid credentials.");
         const passwordValidated = yield bcryptjs_1.default.compare(password, foundUser.password);
         if (passwordValidated) {
-            const { accessToken, refreshToken } = yield (0, tokens_1.generateTokens)({
+            const { accessToken, refreshToken } = yield (0, tokens_2.generateTokens)({
                 id: foundUser.id,
             });
-            res.cookie("jwt", refreshToken, COOKIE_OPTIONS);
+            res.cookie("jwt", refreshToken, cookieOptions);
             return res.status(201).json({ accessToken });
         }
         throw new express_error_1.ExpressError(400, "Invalid credentials.");
@@ -62,12 +66,12 @@ const users = {
         // If user with token is not found, clear cookies and return response.
         const foundUser = yield (0, users_1.getUserByToken)(refreshToken);
         if (!foundUser) {
-            res.clearCookie("jwt", COOKIE_OPTIONS);
+            res.clearCookie("jwt", cookieOptions);
             return res.status(200).send({ success: "User is logged out. " });
         }
         // Delete refresh token from user, clear cookie and return response.
-        yield (0, tokens_2.deleteRefreshToken)(foundUser.id);
-        res.clearCookie("jwt", COOKIE_OPTIONS);
+        yield (0, tokens_1.deleteRefreshToken)(foundUser.id);
+        res.clearCookie("jwt", cookieOptions);
         return res.status(200).send({ success: "User is logged out." });
     }),
 };

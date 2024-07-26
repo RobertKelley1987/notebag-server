@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 import { getUserByToken } from "../db/users";
-import { deleteRefreshToken } from "../db/tokens";
 import { generateAccessToken } from "../lib/tokens";
 import { ExpressError } from "../lib/express-error";
 import type { Request, Response } from "express";

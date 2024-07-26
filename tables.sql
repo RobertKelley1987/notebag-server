@@ -15,9 +15,10 @@ CREATE TABLE notes (
     content TEXT,
     position INT UNSIGNED default 0,
     user_id varchar(36) NOT NULL,
-    updated_at DATETIME DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
+    updated_at timestamp DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
     created_at timestamp DEFAULT current_timestamp,
     pinned BOOLEAN DEFAULT FALSE,
+    pinned_at timestamp,
     foreign key(user_id) references users(user_id) ON DELETE CASCADE
 );
 

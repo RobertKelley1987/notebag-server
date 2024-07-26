@@ -26,6 +26,7 @@ function createUser(email, password) {
             return { id, email, password };
         }
         catch (error) {
+            console.log(error);
             // Notify client if user already exists.
             const dbError = error;
             if (dbError.code === "ER_DUP_ENTRY") {

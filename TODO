@@ -1,5 +1,6 @@
 IN PRODUCTION! -- ALL COOKIE HTTP ONLY REQUESTS AND RESPONSES NEED THE SECURE OPTION
 SET TO TRUE. THIS MAKES ALL COOKIES OPERATE ONLY ON HTTPS, NOT HTTP.
 Test updated_at on notes in db
-Figure out if i still need to send note ids from the front end when notes are created
 Look at db / controller structure for tags and note tags
+If I have time, test cascade deleting.
+If I have more time, separate auth into a separate server.

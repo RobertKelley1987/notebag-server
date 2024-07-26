@@ -14,6 +14,8 @@ export async function createUser(email: string, password: string) {
 
     return { id, email, password };
   } catch (error) {
+    console.log(error);
+
     // Notify client if user already exists.
     const dbError = error as QueryError;
     if (dbError.code === "ER_DUP_ENTRY") {

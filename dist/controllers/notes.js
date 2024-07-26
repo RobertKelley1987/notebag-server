@@ -73,7 +73,6 @@ const notes = {
         const userId = req.user.id;
         // Fetch notes (title and content)
         const notes = yield (0, notes_1.getUserNotes)(userId);
-        console.log(notes);
         // Fetch tags for each note
         const tagPromises = notes.map((note) => (0, tags_1.getNoteTags)(note.id));
         const noteTags = yield Promise.all(tagPromises);
