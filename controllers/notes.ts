@@ -19,7 +19,14 @@ import type { Tag } from "../types";
 
 const notes = {
   create: async (req: Request, res: Response) => {
-    const { id, title, content, pinned = false, tags } = req.body;
+    const {
+      id,
+      title,
+      content,
+      pinned = false,
+      pinnedAt = "",
+      tags,
+    } = req.body;
     if (!id) {
       throw new ExpressError(400, "Note id is required.");
     }
@@ -33,7 +40,14 @@ const notes = {
 
     // Create new note
     const userId = req.user.id;
-    const newNote = await createNote(id, userId, title, content, pinned);
+    const newNote = await createNote(
+      id,
+      userId,
+      title,
+      content,
+      pinned,
+      pinnedAt
+    );
 
     // Add tags to note
     if (tags.length > 0) {

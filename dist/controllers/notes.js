@@ -15,7 +15,7 @@ const notetags_1 = require("../db/notetags");
 const express_error_1 = require("../lib/express-error");
 const notes = {
     create: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const { id, title, content, pinned = false, tags } = req.body;
+        const { id, title, content, pinned = false, pinnedAt = "", tags, } = req.body;
         if (!id) {
             throw new express_error_1.ExpressError(400, "Note id is required.");
         }
@@ -24,7 +24,7 @@ const notes = {
         }
         // Create new note
         const userId = req.user.id;
-        const newNote = yield (0, notes_1.createNote)(id, userId, title, content, pinned);
+        const newNote = yield (0, notes_1.createNote)(id, userId, title, content, pinned, pinnedAt);
         // Add tags to note
         if (tags.length > 0) {
             const tagPromises = tags.map((tag) => (0, notetags_1.createNoteTag)(newNote.id, tag.id));

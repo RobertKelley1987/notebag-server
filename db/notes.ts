@@ -1,5 +1,4 @@
 import db from "./config";
-import { now } from "../lib/time";
 import { ExpressError } from "../lib/express-error";
 import type { RowDataPacket } from "mysql2";
 
@@ -18,7 +17,8 @@ export async function createNote(
   userId: string,
   title: string,
   content: string,
-  pinned: boolean
+  pinned: boolean,
+  pinnedAt: string
 ) {
   try {
     // Shift position of all user notes.
@@ -29,8 +29,8 @@ export async function createNote(
     // Insert new note at position zero.
     const sql =
       "INSERT INTO notes(note_id, title, content, pinned, pinned_at, user_id) VALUES(?, ?, ?, ?, ?, ?)";
-    const pinnedAt = pinned ? now() : null;
-    const values = [noteId, title, content, pinned, pinnedAt, userId];
+    const pinnedAtVal = pinnedAt ? new Date(pinnedAt) : null;
+    const values = [noteId, title, content, pinned, pinnedAtVal, userId];
     await db.query<DBNote[]>(sql, values);
 
     return { id: noteId, title, content, position: 0 };
