@@ -1,4 +1,5 @@
 import db from "./config";
+import { now } from "../lib/time";
 import { ExpressError } from "../lib/express-error";
 import type { RowDataPacket } from "mysql2";
 
@@ -27,12 +28,14 @@ export async function createNote(
 
     // Insert new note at position zero.
     const sql =
-      "INSERT INTO notes(note_id, title, content, pinned, user_id) VALUES(?, ?, ?, ?, ?)";
-    const values = [noteId, title, content, pinned, userId];
+      "INSERT INTO notes(note_id, title, content, pinned, pinned_at, user_id) VALUES(?, ?, ?, ?, ?, ?)";
+    const pinnedAt = pinned ? now() : null;
+    const values = [noteId, title, content, pinned, pinnedAt, userId];
     await db.query<DBNote[]>(sql, values);
 
     return { id: noteId, title, content, position: 0 };
   } catch (error) {
+    console.log(error);
     throw new ExpressError(500, "Failed to create new note in db.");
   }
 }
@@ -41,16 +44,18 @@ export async function updateNote(
   noteId: string,
   title: string,
   content: string,
-  pinned: boolean
+  pinned: boolean,
+  pinnedAt: string
 ) {
   try {
     const sql =
-      "UPDATE notes SET title = ?, content = ?, pinned = ? WHERE note_id = ?";
-    const values = [title, content, pinned, noteId];
+      "UPDATE notes SET title = ?, content = ?, pinned = ?, pinned_at = ? WHERE note_id = ?";
+    const values = [title, content, pinned, new Date(pinnedAt), noteId];
     await db.query<DBNote[]>(sql, values);
 
     return { id: noteId, title, content };
   } catch (error) {
+    console.log(error);
     throw new ExpressError(500, "Failed to update note in db.");
   }
 }

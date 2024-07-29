@@ -18,7 +18,7 @@ CREATE TABLE notes (
     updated_at timestamp DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP,
     created_at timestamp DEFAULT current_timestamp,
     pinned BOOLEAN DEFAULT FALSE,
-    pinned_at timestamp,
+    pinned_at timestamp DEFAULT NULL,
     foreign key(user_id) references users(user_id) ON DELETE CASCADE
 );
 

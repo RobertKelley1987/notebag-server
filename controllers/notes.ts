@@ -47,7 +47,7 @@ const notes = {
   },
   update: async (req: Request, res: Response) => {
     const { noteId } = req.params;
-    const { title, content, pinned = false, tags } = req.body;
+    const { title, content, pinned = false, pinnedAt = null, tags } = req.body;
     if (!noteId) {
       throw new ExpressError(400, "Note id is required to update note.");
     }
@@ -59,7 +59,13 @@ const notes = {
       await Promise.all(tagPromises);
     }
 
-    const updatedNote = await updateNote(noteId, title, content, pinned);
+    const updatedNote = await updateNote(
+      noteId,
+      title,
+      content,
+      pinned,
+      pinnedAt
+    );
     res.status(200).send({ note: updatedNote });
   },
   updatePinned: async (req: Request, res: Response) => {

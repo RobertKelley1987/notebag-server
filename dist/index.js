@@ -18,7 +18,7 @@ app.use(express_1.default.json());
 // Use cors in production only
 if (process.env.NODE_ENV !== "development") {
     app.use((0, cors_1.default)({
-        origin: "http://notebag.site",
+        origin: "https://notebag.site",
         credentials: true,
         allowedHeaders: ["Authorization", "Content-Type"],
     }));

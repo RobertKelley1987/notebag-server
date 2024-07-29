@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteNote = exports.getNoteById = exports.getUserNotes = exports.updateNoteIsPinned = exports.updateNote = exports.createNote = void 0;
 const config_1 = __importDefault(require("./config"));
+const time_1 = require("../lib/time");
 const express_error_1 = require("../lib/express-error");
 function createNote(noteId, userId, title, content, pinned) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -23,26 +24,29 @@ function createNote(noteId, userId, title, content, pinned) {
             const posValues = [userId];
             yield config_1.default.query(posSql, posValues);
             // Insert new note at position zero.
-            const sql = "INSERT INTO notes(note_id, title, content, pinned, user_id) VALUES(?, ?, ?, ?, ?)";
-            const values = [noteId, title, content, pinned, userId];
+            const sql = "INSERT INTO notes(note_id, title, content, pinned, pinned_at, user_id) VALUES(?, ?, ?, ?, ?, ?)";
+            const pinnedAt = pinned ? (0, time_1.now)() : null;
+            const values = [noteId, title, content, pinned, pinnedAt, userId];
             yield config_1.default.query(sql, values);
             return { id: noteId, title, content, position: 0 };
         }
         catch (error) {
+            console.log(error);
             throw new express_error_1.ExpressError(500, "Failed to create new note in db.");
         }
     });
 }
 exports.createNote = createNote;
-function updateNote(noteId, title, content, pinned) {
+function updateNote(noteId, title, content, pinned, pinnedAt) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const sql = "UPDATE notes SET title = ?, content = ?, pinned = ? WHERE note_id = ?";
-            const values = [title, content, pinned, noteId];
+            const sql = "UPDATE notes SET title = ?, content = ?, pinned = ?, pinned_at = ? WHERE note_id = ?";
+            const values = [title, content, pinned, new Date(pinnedAt), noteId];
             yield config_1.default.query(sql, values);
             return { id: noteId, title, content };
         }
         catch (error) {
+            console.log(error);
             throw new express_error_1.ExpressError(500, "Failed to update note in db.");
         }
     });

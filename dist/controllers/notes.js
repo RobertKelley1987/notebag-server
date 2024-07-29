@@ -34,7 +34,7 @@ const notes = {
     }),
     update: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { noteId } = req.params;
-        const { title, content, pinned = false, tags } = req.body;
+        const { title, content, pinned = false, pinnedAt = null, tags } = req.body;
         if (!noteId) {
             throw new express_error_1.ExpressError(400, "Note id is required to update note.");
         }
@@ -44,7 +44,7 @@ const notes = {
             const tagPromises = tags.map((tag) => (0, notetags_1.createNoteTag)(noteId, tag.id));
             yield Promise.all(tagPromises);
         }
-        const updatedNote = yield (0, notes_1.updateNote)(noteId, title, content, pinned);
+        const updatedNote = yield (0, notes_1.updateNote)(noteId, title, content, pinned, pinnedAt);
         res.status(200).send({ note: updatedNote });
     }),
     updatePinned: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
