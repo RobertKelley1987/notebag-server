@@ -40,7 +40,8 @@ function updateNote(noteId, title, content, pinned, pinnedAt) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const sql = "UPDATE notes SET title = ?, content = ?, pinned = ?, pinned_at = ? WHERE note_id = ?";
-            const values = [title, content, pinned, new Date(pinnedAt), noteId];
+            const pinnedAtVal = pinnedAt ? new Date(pinnedAt) : null;
+            const values = [title, content, pinned, pinnedAtVal, noteId];
             yield config_1.default.query(sql, values);
             return { id: noteId, title, content };
         }

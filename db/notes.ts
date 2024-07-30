@@ -50,7 +50,8 @@ export async function updateNote(
   try {
     const sql =
       "UPDATE notes SET title = ?, content = ?, pinned = ?, pinned_at = ? WHERE note_id = ?";
-    const values = [title, content, pinned, new Date(pinnedAt), noteId];
+    const pinnedAtVal = pinnedAt ? new Date(pinnedAt) : null;
+    const values = [title, content, pinned, pinnedAtVal, noteId];
     await db.query<DBNote[]>(sql, values);
 
     return { id: noteId, title, content };
