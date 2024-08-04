@@ -15,12 +15,12 @@ This is the server for a notes app heavily influenced by Google Keep. For some
 reason notes apps are the web app I use the most, so I've wanted to build my own
 since I started coding.
 
-I have built several beginner express servers using MongoDB, buit this is my first
-attempt at using MySQL. I still have a lot to learn about relational
-databases, but this project helped me get more familiar with the SQL language and
-also how to implement it in a fullstack application. This is also my first try at
-using JWT for authorization instead of sessions. While the process was difficult
-for me to learn and implement, I enjoyed learning how to use a better method.
+I have built several beginner express servers using MongoDB, buit this is my
+first attempt at using MySQL. I still have a lot to learn about relational
+databases, but this project helped me get familiar with the SQL language.
+This is also my first try at using JWT for authorization instead of sessions.
+While the process was difficult, I enjoyed learning a better method for
+authorization that I can use on future projects.
 
 For developers attempting a project similar to this, I don't know if it was
 ultimately worth it to develop the entire backend myself. I did find the

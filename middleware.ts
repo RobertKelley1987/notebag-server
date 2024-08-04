@@ -11,7 +11,7 @@ export const authorizeToken: RequestHandler = async (req, res, next) => {
   if (!token) throw new ExpressError(401, "User not authorized.");
 
   const key = process.env.AUTH_KEY;
-  if (!key) throw new ExpressError(500, "Secret key is missing!");
+  if (!key) throw new ExpressError(500, "Environment variables required.");
 
   jwt.verify(token, key, (err, payload) => {
     if (err) throw new ExpressError(403, "User not authorized.");
