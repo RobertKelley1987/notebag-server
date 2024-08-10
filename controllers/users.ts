@@ -19,18 +19,23 @@ if (process.env.NODE_ENV !== "development") {
 
 const users = {
   register: async (req: Request, res: Response) => {
+    // Validate
     const { email, password } = req.body;
     if (!email || !password) {
       throw new ExpressError(400, "Email and password are both required.");
     }
 
+    // Create user with hashed password
     const hashedPassword = await bcrypt.hash(password, 12);
     const newUser = await createUser(email, hashedPassword);
 
+    // Save refresh token to new user.
+    // User id from db required to generate token.
     const { accessToken, refreshToken } = await generateTokens({
       id: newUser.id,
     });
 
+    // Add cookie with options to response and return.
     res.cookie("jwt", refreshToken, cookieOptions);
     res.status(201).json({ accessToken });
   },

@@ -18,9 +18,12 @@ export function generateRefreshToken(user: User) {
   return jwt.sign(user, refreshKey, { expiresIn: "1d" });
 }
 
+// Function to generate new tokens at registration and login.
 export async function generateTokens(user: User) {
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
+
+  // Save refresh token to db every time a new one is created.
   await saveRefreshToken(user.id, refreshToken);
   return { accessToken, refreshToken };
 }

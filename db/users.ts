@@ -8,9 +8,10 @@ export async function createUser(email: string, password: string) {
   try {
     const id = uuid();
 
-    const sql = "INSERT INTO users(user_id, email, password) VALUES(?, ?, ?)";
+    const sql =
+      "INSERT INTO users(user_id, email, password, refresh_token) VALUES(?, ?, ?)";
     const values = [id, email, password];
-    await db.query<DBUser[]>(sql, values);
+    await db.query(sql, values);
 
     return { id, email, password };
   } catch (error) {
